@@ -1,0 +1,654 @@
+/* ==========================================================================
+   🎨 1. CORE VARIABLES, RESETS & THEME SETTINGS
+   ========================================================================== */
+:root {
+    /* Color Palette */
+    --bg-dark: #0f172a;        /* Deep slate background */
+    --panel-dark: #1e293b;     /* Card surface backgrounds */
+    --text-main: #f8fafc;      /* Crisp white typography */
+    --text-muted: #94a3b8;     /* Secondary helper text */
+    
+    --primary: #7c3aed;        /* Neon Purple accents */
+    --primary-hover: #6d28d9;
+    --accent: #0d9488;         /* Electric Teal for constructive acts */
+    --accent-hover: #0f766e;
+    --danger: #e11d48;         /* Crimson for Imposter UI / actions */
+    --danger-hover: #be123c;
+    --warning: #d97706;        /* Amber for active state/alerts */
+
+    /* Structural Constants */
+    --radius-lg: 20px;
+    --radius-md: 12px;
+    --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    --transition-smooth: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    -webkit-tap-highlight-color: transparent; /* Clean up tap flashes on iOS */
+}
+
+body {
+    font-family: var(--font-sans);
+    background-color: var(--bg-dark);
+    color: var(--text-main);
+    overflow: hidden;
+    position: fixed;
+    width: 100%;
+    height: 100%;
+}
+
+/* ==========================================================================
+   📱 2. APP CONTAINER & MOBILE LAYOUT ROUTING
+   ========================================================================== */
+.app-container {
+    width: 100%;
+    height: 100svh; /* Prevents viewport jumping on mobile address bars */
+    margin: 0 auto;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+@media (min-width: 480px) {
+    .app-container {
+        max-width: 440px;
+        height: 92vh;
+        margin: 4vh auto;
+        border-radius: 32px;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        border: 4px solid var(--panel-dark);
+    }
+}
+
+/* Screen System Framework */
+.game-screen {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    padding: 24px;
+    background-color: var(--bg-dark);
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(15px);
+    transition: var(--transition-smooth);
+    z-index: 1;
+}
+
+.game-screen.active {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+    z-index: 2;
+}
+
+/* Shell Structural Splitters */
+.screen-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    min-height: 56px;
+    margin-bottom: 20px;
+}
+
+.screen-header h2 {
+    font-size: 1.5rem;
+    font-weight: 800;
+}
+
+.screen-body {
+    flex: 1;
+    overflow-y: auto;
+    padding-bottom: 16px;
+    scrollbar-width: none; 
+}
+.screen-body::-webkit-scrollbar {
+    display: none;
+}
+
+.screen-footer {
+    padding-top: 16px;
+    margin-top: auto;
+}
+
+/* ==========================================================================
+   🧱 3. REUSABLE ATOMICS: BUTTONS & FIELDS
+   ========================================================================== */
+.btn {
+    font-family: var(--font-sans);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border: none;
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    border-radius: var(--radius-md);
+    transition: var(--transition-smooth);
+    user-select: none;
+    touch-action: manipulation;
+}
+
+.btn-large {
+    width: 100%;
+    padding: 18px 24px;
+    border-radius: var(--radius-lg);
+    font-size: 1.1rem;
+}
+
+.btn-primary {
+    background-color: var(--primary);
+    color: var(--text-main);
+}
+.btn-primary:active { background-color: var(--primary-hover); transform: scale(0.98); }
+.btn-primary:disabled { background-color: var(--panel-dark); color: var(--text-muted); cursor: not-allowed; transform: none; }
+
+.btn-secondary {
+    background-color: var(--panel-dark);
+    color: var(--text-main);
+    width: 100%;
+    padding: 14px 20px;
+}
+.btn-secondary:active { background-color: rgba(255,255,255,0.05); }
+
+.btn-accent {
+    background-color: var(--accent);
+    color: var(--text-main);
+    padding: 0 20px;
+}
+.btn-accent:active { background-color: var(--accent-hover); }
+
+.input-group {
+    display: flex;
+    gap: 10px;
+    background-color: var(--panel-dark);
+    padding: 8px;
+    border-radius: var(--radius-md);
+    margin-bottom: 20px;
+    border: 2px solid transparent;
+}
+.input-group:focus-within {
+    border-color: var(--primary);
+}
+
+.input-group input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--text-main);
+    font-family: var(--font-sans);
+    font-size: 1rem;
+    padding-left: 8px;
+}
+
+/* ==========================================================================
+   🖼️ 4. INDIVIDUAL VIEW ENGINE COMPONENT DESIGNS
+   ========================================================================== */
+
+/* --- SCREEN 1: MENU COMPONENT --- */
+.hero-section {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.logo-badge {
+    background-color: rgba(124, 58, 237, 0.15);
+    color: #c084fc;
+    padding: 6px 14px;
+    border-radius: 50px;
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 2px;
+    margin-bottom: 16px;
+}
+
+.main-title {
+    font-size: 3.2rem;
+    font-weight: 800;
+    line-height: 1.05;
+    letter-spacing: -1px;
+    margin-bottom: 16px;
+}
+
+.highlight-text {
+    color: var(--warning);
+}
+
+.hero-subtitle {
+    color: var(--text-muted);
+    font-size: 1rem;
+    max-width: 280px;
+    line-height: 1.5;
+}
+
+.menu-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* --- SCREEN 2: DYNAMIC SETUP COMPONENT --- */
+.list-container {
+    flex: 1;
+    overflow-y: auto;
+}
+
+#player-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.player-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: var(--panel-dark);
+    padding: 12px 16px;
+    border-radius: var(--radius-md);
+    animation: slideIn 0.2s ease-out;
+}
+
+.player-name-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-weight: 600;
+}
+
+.btn-remove-player {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-family: var(--font-sans);
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+.btn-remove-player:active { color: var(--danger); }
+
+/* --- SCREEN 3 & 4: GATEKEEPER & ROLE REVEAL BLOCKS --- */
+.pass-card {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 20px;
+}
+
+.pass-card h3 {
+    font-size: 1.2rem;
+    color: var(--text-muted);
+    font-weight: 400;
+}
+
+.target-player {
+    font-size: 2.8rem;
+    font-weight: 800;
+    color: var(--text-main);
+    margin: 12px 0 20px 0;
+}
+
+.pass-warning {
+    font-size: 0.9rem;
+    color: var(--warning);
+    max-width: 280px;
+    line-height: 1.4;
+}
+
+/* Secret Identity Card Dynamic Displays */
+.reveal-card {
+    flex: 1;
+    background-color: var(--panel-dark);
+    border-radius: 28px;
+    padding: 32px 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    text-align: center;
+    border: 3px solid rgba(255, 255, 255, 0.05);
+    transition: var(--transition-smooth);
+}
+
+.reveal-card.imposter-theme {
+    background: radial-gradient(circle at top, #310a14 0%, #1e1b4b 100%);
+    border-color: var(--danger);
+}
+
+.role-title-label {
+    font-size: 0.8rem;
+    letter-spacing: 2px;
+    font-weight: 800;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+}
+
+#reveal-role-title {
+    font-size: 1.8rem;
+    font-weight: 800;
+}
+
+.reveal-card.imposter-theme #reveal-role-title {
+    color: var(--danger);
+}
+
+.word-display-box {
+    background-color: rgba(0, 0, 0, 0.2);
+    width: 100%;
+    padding: 32px 16px;
+    border-radius: var(--radius-lg);
+    margin: 24px 0;
+    border: 1px dashed rgba(255,255,255,0.1);
+}
+
+#reveal-word-value {
+    font-size: 2.5rem;
+    font-weight: 800;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    word-break: break-word;
+    overflow-wrap: break-word;
+    max-width: 100%;
+    display: inline-block;
+}
+
+/* --- SCREEN 5: DISCUSSION SCREEN MODERNE UX --- */
+.timer-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    margin: 20px 0 28px 0;
+}
+
+.timer-circle {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    border: 4px solid rgba(255, 255, 255, 0.05);
+    background-color: rgba(0, 0, 0, 0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: var(--text-main);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    transition: var(--transition-smooth);
+}
+
+.timer-circle.warning {
+    border-color: var(--danger);
+    color: var(--danger);
+    box-shadow: 0 0 20px rgba(225, 29, 72, 0.3);
+    animation: pulse 1s infinite alternate;
+}
+
+.section-instruction {
+    text-align: center;
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    margin-bottom: 24px;
+    line-height: 1.5;
+    padding: 0 8px;
+}
+
+.voting-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 4px 2px;
+}
+
+.vote-tile {
+    background-color: var(--panel-dark);
+    padding: 18px 20px;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    border: 2px solid transparent;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: var(--transition-smooth);
+}
+
+.vote-tile:active {
+    transform: scale(0.98);
+    border-color: var(--primary);
+    background-color: rgba(124, 58, 237, 0.05);
+}
+
+.vote-tile .player-name {
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: var(--text-main);
+}
+
+.vote-tile .status-pill {
+    font-size: 0.8rem;
+    font-weight: 800;
+    padding: 6px 14px;
+    border-radius: 50px;
+    background-color: rgba(13, 148, 136, 0.1);
+    color: #2dd4bf;
+    border: 1px solid rgba(13, 148, 136, 0.2);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.vote-tile.eliminated {
+    opacity: 0.5;
+    background-color: rgba(15, 23, 42, 0.4);
+    border-color: transparent !important;
+    pointer-events: none;
+    box-shadow: none;
+}
+
+.vote-tile.eliminated .player-name {
+    text-decoration: line-through;
+    color: var(--text-muted);
+}
+
+.vote-tile.eliminated .status-pill.reveal-innocent {
+    background-color: rgba(255, 255, 255, 0.05);
+    color: var(--text-muted);
+    border-color: transparent;
+}
+
+.vote-tile.eliminated .status-pill.reveal-imposter {
+    background-color: rgba(225, 29, 72, 0.15);
+    color: #fb7185;
+    border-color: rgba(225, 29, 72, 0.2);
+}
+
+/* ==========================================================================
+   🧩 HINT LAYOUT CONTEXTS & SEPARATION MODULES
+   ========================================================================== */
+.hint-container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    min-height: 100px;
+}
+
+.btn-hint {
+    background-color: rgba(217, 119, 6, 0.15);
+    color: #fbbf24;
+    border: 1px solid rgba(217, 119, 6, 0.3);
+    padding: 12px 20px;
+    font-size: 0.9rem;
+    width: 80%;
+}
+
+.hint-word-box {
+    background-color: rgba(217, 119, 6, 0.1);
+    border: 1px solid rgba(217, 119, 6, 0.2);
+    border-radius: var(--radius-md);
+    padding: 14px 24px;
+    width: 100%;
+    animation: fadeIn 0.25s ease-out;
+}
+
+.hint-label {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 4px;
+}
+
+#hint-word-value {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: #fbbf24;
+}
+
+/* ==========================================================================
+   🗂️ 5. BOTTOM DRAWER (RULES WINDOW)
+   ========================================================================== */
+.drawer-overlay {
+    position: absolute;
+    inset: 0;
+    background-color: rgba(15, 23, 42, 0.75);
+    backdrop-filter: blur(4px);
+    z-index: 100;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+.drawer-overlay.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.drawer-content {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: var(--panel-dark);
+    border-radius: 24px 24px 0 0;
+    padding: 24px;
+    transform: translateY(100%);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    max-height: 80%;
+    display: flex;
+    flex-direction: column;
+}
+
+.drawer-overlay.active .drawer-content {
+    transform: translateY(0);
+}
+
+.drawer-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.drawer-header h3 {
+    font-size: 1.3rem;
+    font-weight: 800;
+}
+
+.rules-list {
+    padding-left: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    color: var(--text-muted);
+    line-height: 1.5;
+    font-size: 0.95rem;
+}
+
+.rules-list strong {
+    color: var(--text-main);
+}
+
+/* ==========================================================================
+   🎬 6. SYSTEM ANIMATIONS
+   ========================================================================== */
+@keyframes slideIn {
+    from { transform: translateY(10px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+@keyframes pulse {
+    from { transform: scale(1); }
+    to { transform: scale(1.05); }
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* ==========================================================================
+   🛠️ EXTRA NAV TEXT LABELS
+   ========================================================================== */
+.btn-text-back {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    font-family: var(--font-sans);
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 8px 4px;
+    transition: var(--transition-smooth);
+}
+.btn-text-back:active {
+    color: var(--text-main);
+}
+
+.btn-close-text {
+    background: transparent;
+    border: none;
+    color: var(--danger);
+    font-family: var(--font-sans);
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.btn-timer-control {
+    width: auto !important;
+    padding: 10px 20px !important;
+    font-size: 0.9rem !important;
+    margin-top: 4px;
+    border-radius: 50px !important;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.reveal-card, .pass-card {
+    box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.5);
+}
+
+input:focus, button:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+}

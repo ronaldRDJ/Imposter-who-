@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Imposter Who? - Infinite Library Edition</title>
+    <link rel="preconnect" href="https://googleapis.com">
+    <link rel="preconnect" href="https://gstatic.com" crossorigin>
+    <link href="https://googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="app-container">
+
+        <!-- SCREEN 1: MAIN MENU -->
+        <section id="screen-menu" class="game-screen active">
+            <div class="hero-section">
+                <div class="logo-badge">INFINITE MODE</div>
+                <h1 class="main-title">IMPOSTER<br><span class="highlight-text">WHO?</span></h1>
+                <p class="hero-subtitle">The ultimate single-device social deduction game.</p>
+            </div>
+            <div class="menu-actions">
+                <button id="btn-menu-start" class="btn btn-primary btn-large">Play Game</button>
+                <button id="btn-menu-rules" class="btn btn-secondary">How to Play</button>
+            </div>
+        </section>
+
+        <!-- SCREEN 2: PLAYER SETUP -->
+        <section id="screen-setup" class="game-screen">
+            <header class="screen-header">
+                <button class="btn-text-back btn-back">Back</button>
+                <h2>Players</h2>
+            </header>
+            <div class="screen-body">
+                <form id="player-form" class="input-group">
+                    <input type="text" id="player-input" placeholder="Enter player name..." maxlength="12" autocomplete="off">
+                    <button type="submit" class="btn btn-accent">Add</button>
+                </form>
+                <div class="list-container">
+                    <ul id="player-list">
+                        <!-- Dynamic player rows append here -->
+                    </ul>
+                </div>
+            </div>
+            <footer class="screen-footer">
+                <button id="btn-setup-next" class="btn btn-primary btn-large" disabled>
+                    Start Round →
+                </button>
+            </footer>
+        </section>
+
+        <!-- SCREEN 3: PASS & PLAY (GATEKEEPER) -->
+        <section id="screen-pass" class="game-screen">
+            <div class="pass-card">
+                <h3>Pass the phone to</h3>
+                <h1 id="pass-player-name" class="target-player">Player Name</h1>
+                <p class="pass-warning">Make sure no one else is looking at the screen!</p>
+            </div>
+            <div class="menu-actions">
+                <button id="btn-pass-reveal" class="btn btn-primary btn-large">Reveal My Card</button>
+            </div>
+        </section>
+
+        <!-- SCREEN 4: CARD REVEAL (SECRET ROLE) -->
+        <section id="screen-reveal" class="game-screen">
+            <div id="reveal-card-body" class="reveal-card">
+                <div id="role-header-container">
+                    <p class="role-title-label">YOUR SECRET ROLE</p>
+                    <h2 id="reveal-role-title">SECRET WORD</h2>
+                </div>
+
+                <div class="word-display-box">
+                    <h1 id="reveal-word-value">PIZZA</h1>
+                </div>
+
+                <div id="imposter-hint-container" class="hint-container hidden">
+                    <button id="btn-reveal-hint" class="btn btn-hint">Reveal Secret Hint</button>
+                    <div id="hint-word-box" class="hint-word-box hidden">
+                        <p class="hint-label">Your Fake Hint Clue:</p>
+                        <h3 id="hint-word-value">CHEESE</h3>
+                    </div>
+                </div>
+            </div>
+            <footer class="screen-footer">
+                <button id="btn-reveal-next" class="btn btn-primary btn-large">Clear & Lock Card</button>
+            </footer>
+        </section>
+
+        <!-- SCREEN 5: GAMEPLAY HUB & VOTING ROUND -->
+        <section id="screen-game" class="game-screen">
+            <header class="screen-header">
+                <h2>Discussion</h2>
+            </header>
+            <div class="screen-body">
+                <div class="timer-section">
+                    <div id="timer-display" class="timer-circle">60</div>
+                    <button id="btn-timer-toggle" class="btn btn-secondary btn-timer-control">Start Timer</button>
+                </div>
+                
+                <p class="section-instruction">Go around in order, give one word clue, then vote to eliminate the Imposter!</p>
+                
+                <div class="list-container">
+                    <div class="voting-grid" id="game-player-grid">
+                        <!-- Dynamic player tiles append here -->
+                    </div>
+                </div>
+            </div>
+            <footer class="screen-footer">
+                <button id="btn-game-restart" class="btn btn-secondary">Main Menu</button>
+            </footer>
+        </section>
+
+        <!-- MODAL OVERLAY: RULES DRAWER -->
+        <div id="rules-drawer" class="drawer-overlay">
+            <div class="drawer-content">
+                <div class="drawer-header">
+                    <h3>How to Play</h3>
+                    <button id="btn-close-rules" class="btn-close-text">Close</button>
+                </div>
+                <div class="drawer-body">
+                    <ol class="rules-list">
+                        <li>Gather 3 or more friends around <strong>one mobile phone</strong>.</li>
+                        <li>Type everyone's name into the list.</li>
+                        <li>Pass the phone around. Everyone secretly looks at their card.</li>
+                        <li><strong>Innocents</strong> see the real Secret Word. The <strong>Imposter</strong> sees an alert and a strategic 1-word fallback hint.</li>
+                        <li>Take turns going around in a circle saying exactly <strong>one word</strong> related to your card.</li>
+                        <li>Discuss, find out who gave a suspicious clue, and vote them off!</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Application Javascript Logic Hooks -->
+    <script src="library.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
