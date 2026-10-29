@@ -8,8 +8,7 @@ let gameState = {
     timerInterval: null,
     timerDuration: 60,
     timerRunning: false,
-    // New state arrays to track played words
-    availableWords: [] 
+    availableWords: []
 };
 
 /* ==========================================================================
@@ -34,7 +33,6 @@ const btnMenuRules = document.getElementById('btn-menu-rules');
 const btnCloseRules = document.getElementById('btn-close-rules');
 const btnSetupNext = document.getElementById('btn-setup-next');
 const btnPassReveal = document.getElementById('btn-pass-reveal');
-const btnRevealHint = document.getElementById('btn-reveal-hint');
 const btnRevealNext = document.getElementById('btn-reveal-next');
 const btnGameRestart = document.getElementById('btn-game-restart');
 const btnTimerToggle = document.getElementById('btn-timer-toggle');
@@ -50,7 +48,6 @@ const revealCardBody = document.getElementById('reveal-card-body');
 const revealRoleTitle = document.getElementById('reveal-role-title');
 const revealWordValue = document.getElementById('reveal-word-value');
 const imposterHintContainer = document.getElementById('imposter-hint-container');
-const hintWordBox = document.getElementById('hint-word-box');
 const hintWordValue = document.getElementById('hint-word-value');
 
 /* ==========================================================================
@@ -123,23 +120,25 @@ function validateSetupRequirement() {
    🎭 5. THE GAME SYSTEM LOGIC LOOPS
    ========================================================================== */
 function initializeGameRound() {
-    // Safety check if library database is missing or empty
     if (typeof WORD_LIBRARY === 'undefined' || WORD_LIBRARY.length === 0) {
         alert("Error: Word library database file could not be found or is empty.");
         return;
     }
 
-    // Pick a totally random word item out of the entire global library pool array
-    const randomIndex = Math.floor(Math.random() * WORD_LIBRARY.length);
-    gameState.selectedWordPair = WORD_LIBRARY[randomIndex];
+    // Refresh working copy from main database dictionary if it finishes
+    if (gameState.availableWords.length === 0) {
+        gameState.availableWords = [...WORD_LIBRARY];
+    }
 
-    // Reset player variables completely
+    const randomIndex = Math.floor(Math.random() * gameState.availableWords.length);
+    // Splice out the picked element object array
+    gameState.selectedWordPair = gameState.availableWords.splice(randomIndex, 1)[0];
+
     gameState.players.forEach(p => {
         p.role = 'innocent';
         p.isAlive = true;
     });
 
-    // Select exactly one random player to act as the hidden imposter
     const imposterIndex = Math.floor(Math.random() * gameState.players.length);
     gameState.players[imposterIndex].role = 'imposter';
 
@@ -158,23 +157,21 @@ function startPassAndPlayCycle() {
 }
 
 /* ==========================================================================
-   👁️ 6. CARD REVEALS & IMPOSTER HINT INTERACTIVE SYSTEMS
+   👁️ 6. CARD REVEALS & AUTOMATIC HINT SYSTEMS
    ========================================================================== */
 btnPassReveal.onclick = function() {
     const player = gameState.players[gameState.currentPassIndex];
     
-    // Reset view states first to avoid graphical blinking anomalies
+    // Clean canvas presets
     revealCardBody.classList.remove('imposter-theme');
     imposterHintContainer.classList.add('hidden');
-    hintWordBox.classList.add('hidden');
-    btnRevealHint.classList.remove('hidden');
 
     if (player.role === 'imposter') {
         revealCardBody.classList.add('imposter-theme');
         revealRoleTitle.textContent = "YOU ARE THE IMPOSTER";
         revealWordValue.textContent = "???";
         
-        // Inject single hint element safely
+        // Instant visual update tracking maps
         hintWordValue.textContent = gameState.selectedWordPair.hint;
         imposterHintContainer.classList.remove('hidden');
     } else {
@@ -183,11 +180,6 @@ btnPassReveal.onclick = function() {
     }
 
     changeScreen('reveal');
-};
-
-btnRevealHint.onclick = function() {
-    btnRevealHint.classList.add('hidden');
-    hintWordBox.classList.remove('hidden');
 };
 
 btnRevealNext.onclick = function() {
@@ -301,9 +293,7 @@ rulesDrawer.addEventListener('click', (e) => {
 });
 
 btnSetupNext.addEventListener('click', initializeGameRound);
-
 btnTimerToggle.addEventListener('click', toggleTimerSystem);
-
 btnGameRestart.addEventListener('click', () => {
     stopTimerSystem();
     changeScreen('menu');
